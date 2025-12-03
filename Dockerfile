@@ -27,4 +27,4 @@ RUN git clone -b ${RYU_BRANCH} https://github.com/osrg/ryu.git && \
 
 RUN apk del .build-dependencies
 
-ENTRYPOINT ["/bin/ash"]
+ENTRYPOINT ["python", "-m", "ryu.cmd.manager"]

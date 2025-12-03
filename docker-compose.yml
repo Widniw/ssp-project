@@ -2,8 +2,7 @@ services:
   ryu:
     image: ryu-alpine
     container_name: ryu
-    # command: python3 -m ryu.cmd.manager --ofp-tcp-listen-port 6633 ryu.app.simple_switch
-    # command does not work, cant figure this out -Krzysiek
+    command: ["--ofp-tcp-listen-port", "6633", "ryu.app.simple_switch"]
     networks:
       sdn_net:
         ipv4_address: 172.16.0.2
@@ -28,7 +27,7 @@ services:
     networks:
       sdn_net:
         ipv4_address: 172.16.0.3
-    command: bash -c "mn --controller=remote,ip=172.16.0.2 --topo single,3"
+    entrypoint: ["bash", "/ssp-project/startup.sh"]
 
 networks:
   sdn_net:
