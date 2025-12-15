@@ -2,7 +2,7 @@ services:
   ryu:
     image: ryu-alpine
     container_name: ryu
-    command: ["--ofp-tcp-listen-port", "6633", "ryu.app.simple_switch"]
+    command: ["--ofp-tcp-listen-port", "6633", "ryu.app.simple_switch_stp_13"]
     networks:
       sdn_net:
         ipv4_address: 172.16.0.2
