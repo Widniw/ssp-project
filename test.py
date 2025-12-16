@@ -10,7 +10,7 @@ from mininet.node import RemoteController, OVSKernelSwitch
 from mininet.link import TCLink
 from mininet.log import setLogLevel, info
 
-from geant_topo import Geant
+from topology.geant_topology import Geant
 
 PING_RTT_RE = re.compile(r"rtt min/avg/max/mdev = ([\d.]+)/([\d.]+)/([\d.]+)/([\d.]+) ms")
 PING_STAT_RE = re.compile(r"(\d+)\s+packets transmitted,\s+(\d+)\s+received.*?(\d+)%\s+packet loss")
@@ -219,7 +219,7 @@ def main():
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--profiles", default="voip,video,bulk")
 
-    parser.add_argument("--warmup", type=int, default=20)
+    parser.add_argument("--warmup", type=int, default=30)
     parser.add_argument("--out", default="results.json")
     parser.add_argument("--log", default="info", choices=["debug", "info", "warning", "error"])
     args = parser.parse_args()

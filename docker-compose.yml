@@ -19,7 +19,7 @@ services:
     tty: true
     privileged: true
     environment:
-      - DISPLAY
+      - DISPLAY=$DISPLAY
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix
       - /lib/modules:/lib/modules
