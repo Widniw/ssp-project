@@ -2,7 +2,7 @@ services:
   ryu:
     image: ryu-alpine
     container_name: ryu
-    command: ["--ofp-tcp-listen-port", "6633", "ryu.app.simple_switch_stp_13"]
+    command: ["--ofp-tcp-listen-port", "6633", "--observe-links", "/apps/test_app.py"]
     volumes:
     - ./apps:/apps
     networks:

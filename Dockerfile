@@ -23,7 +23,9 @@ RUN git clone -b ${RYU_BRANCH} https://github.com/osrg/ryu.git && \
     git checkout tags/${RYU_TAG} && \
     pip install . && \
     pip install -r tools/optional-requires && \
-    pip install --no-cache-dir "eventlet==0.30.2"
+    pip install --no-cache-dir "eventlet==0.30.2" && \
+    pip install networkx && \
+    pip install matplotlib
 
 RUN apk del .build-dependencies
 
