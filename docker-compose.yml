@@ -2,7 +2,9 @@ services:
   ryu:
     image: ryu-alpine
     container_name: ryu
-    command: ["--ofp-tcp-listen-port", "6633", "ryu.app.simple_switch_stp_13"]
+    command: ["--ofp-tcp-listen-port", "6633", "/apps/test_app.py"]
+    volumes:
+    - ./apps:/apps
     networks:
       sdn_net:
         ipv4_address: 172.16.0.2
@@ -23,11 +25,11 @@ services:
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix
       - /lib/modules:/lib/modules
-      - .:/ssp-project
+      - ./scenarios:/scenarios
     networks:
       sdn_net:
         ipv4_address: 172.16.0.3
-    entrypoint: ["bash", "/ssp-project/startup.sh"]
+    entrypoint: ["bash", "/scenarios/test.sh"]
 
 networks:
   sdn_net:
