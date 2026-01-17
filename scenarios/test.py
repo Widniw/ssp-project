@@ -10,7 +10,7 @@ from mininet.node import RemoteController, OVSKernelSwitch
 from mininet.link import TCLink
 from mininet.log import setLogLevel, info
 
-from topology.geant_topology import Geant
+from topology.ssp_topology import SSPTopo
 
 PING_RTT_RE = re.compile(r"rtt min/avg/max/mdev = ([\d.]+)/([\d.]+)/([\d.]+)/([\d.]+) ms")
 PING_STAT_RE = re.compile(r"(\d+)\s+packets transmitted,\s+(\d+)\s+received.*?(\d+)%\s+packet loss")
@@ -211,8 +211,8 @@ def run_parallel_bundle(src, dst, profs, duration_s: int, port_base: int):
 
 def main():
     parser = argparse.ArgumentParser(description="GEANT Mininet traffic generator (parallel flows + ping under load).")
-    parser.add_argument("--controller-ip", default="127.0.0.1")
-    parser.add_argument("--controller-port", type=int, default=6653)
+    parser.add_argument("--controller-ip", default="172.16.0.2")
+    parser.add_argument("--controller-port", type=int, default=6633)
 
     parser.add_argument("--pairs", type=int, default=10)
     parser.add_argument("--duration", type=int, default=10)
@@ -228,7 +228,7 @@ def main():
     profs = profiles_from_csv(args.profiles)
 
     net = Mininet(
-        topo=Geant(),
+        topo=SSPTopo(),
         build=False,
         autoSetMacs=True,
         autoStaticArp=True,
