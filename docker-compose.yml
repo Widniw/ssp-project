@@ -1,6 +1,6 @@
 services:
   ryu:
-    image: ryu-alpine
+    image: ryu-debian
     container_name: ryu
     command: ["--ofp-tcp-listen-port", "6633", "--observe-links", "/apps/test_app.py"]
     volumes:

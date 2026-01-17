@@ -231,7 +231,7 @@ def main():
         topo=SSPTopo(),
         build=False,
         autoSetMacs=True,
-        autoStaticArp=True,
+        autoStaticArp=False,
         switch=OVSKernelSwitch,
         link=TCLink,
         controller=None,

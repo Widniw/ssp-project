@@ -1,32 +1,33 @@
-FROM python:3.8-alpine
+FROM python:3.8-slim
 
-RUN apk add --virtual .build-dependencies \
-    gcc \
+# Install system dependencies needed for Ryu + matplotlib
+RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
-    libffi-dev \
-    libgcc \
-    libxslt-dev \
-    libxml2-dev \
+    gcc \
     make \
-    musl-dev \
-    openssl-dev \
-    zlib-dev 
-
-RUN apk add bash
+    libffi-dev \
+    libssl-dev \
+    libxml2-dev \
+    libxslt1-dev \
+    zlib1g-dev \
+    bash \
+    pkg-config \
+    && rm -rf /var/lib/apt/lists/*
 
 ENV RYU_BRANCH=master
 ENV RYU_TAG=v4.30
 ENV HOME=/root
+
 WORKDIR /root
+
+# Clone and install Ryu and required Python packages
 RUN git clone -b ${RYU_BRANCH} https://github.com/osrg/ryu.git && \
     cd ryu && \
     git checkout tags/${RYU_TAG} && \
     pip install . && \
     pip install -r tools/optional-requires && \
-    pip install --no-cache-dir "eventlet==0.30.2" && \
+    pip install --no-cache-dir eventlet==0.30.2 && \
     pip install networkx && \
     pip install matplotlib
-
-RUN apk del .build-dependencies
 
 ENTRYPOINT ["python", "-m", "ryu.cmd.manager"]
