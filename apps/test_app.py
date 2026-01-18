@@ -13,6 +13,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from ryu.lib.packet import arp, ipv4
 from ryu.ofproto import ofproto_v1_3_parser
+from ryu.lib import hub
 
 
 class SimpleSwitch(app_manager.RyuApp):
@@ -22,6 +23,79 @@ class SimpleSwitch(app_manager.RyuApp):
         super(SimpleSwitch, self).__init__(*args, **kwargs)
         self.topology_api_app = self
         self.topology = nx.DiGraph()
+        self.ports_tx_stat = {}
+        self.monitor_thread = hub.spawn(self._monitor)
+
+        # Service rate = 10 Mbit/s
+        self.SERVICE_RATE = 10000000
+        
+        # Switch queue capacity
+        self.QUEUE_CAPACITY = 1000
+
+    def _monitor(self):
+        while True:
+            switch_list = get_switch(self.topology_api_app, None)
+            dps = [switch.dp for switch in switch_list]
+            
+            for dp in dps:
+                self._request_stats(dp)
+                
+            hub.sleep(1)
+
+    def _request_stats(self, datapath):
+        ofproto = datapath.ofproto
+        parser = datapath.ofproto_parser
+
+        req = parser.OFPPortStatsRequest(datapath, 0, ofproto.OFPP_ANY)
+        datapath.send_msg(req)
+
+    @set_ev_cls(ofp_event.EventOFPPortStatsReply, MAIN_DISPATCHER)
+    def _port_stats_reply_handler(self, ev):
+        body = ev.msg.body
+        dpid = ev.msg.datapath.id
+        
+        for stat in body:
+            port_no = stat.port_no
+            
+            # Skip "LOCAL" port (internal switch port)
+            if port_no > 0xffff: 
+                continue
+
+            key = (dpid, port_no)
+            
+            current_tx_bytes = stat.tx_bytes
+            
+            throughput = 0
+            delay = 1
+            if key in self.ports_tx_stat:
+                prev_tx_bytes = self.ports_tx_stat[key]
+                
+                delta_bytes = current_tx_bytes - prev_tx_bytes
+                
+                # Bytes to bits
+                throughput = delta_bytes * 8
+
+                ro = throughput / self.SERVICE_RATE
+
+                # Delay calculated using M/M/1/K formula from 03_04_Metryki_qos,page 45
+                delay = (1/self.SERVICE_RATE) * \
+                (1 - (self.QUEUE_CAPACITY + 1)*ro**self.QUEUE_CAPACITY + \
+                    self.QUEUE_CAPACITY * ro ** (self.QUEUE_CAPACITY + 1)) \
+                    / ((1 - ro**self.QUEUE_CAPACITY)*(1 - ro))
+
+
+            self.ports_tx_stat[key] = current_tx_bytes
+
+            for neighbor in self.topology.successors(dpid):
+                edge_data = self.topology[dpid][neighbor]
+                if edge_data['out_port'] == port_no:
+                    self.topology[dpid][neighbor]['throughput'] = throughput
+                    self.topology[dpid][neighbor]['delay'] = delay
+
+                    print(f"Throughput on port {port_no} switch {dpid}: {throughput}")
+                    print(f"Delay on port {port_no} switch {dpid}: {delay}")           
+           
+                    break
     
     # Switch connects to the controller, controller is gathering topology info
     @set_ev_cls(event.EventSwitchEnter)
@@ -31,9 +105,15 @@ class SimpleSwitch(app_manager.RyuApp):
         for switch in switches:
             self.topology.add_node(switch[0])
 
+            if switch[0] not in self.ports_tx_stat:
+                self.ports_tx_stat[switch[0]] = {}
+            
+            for port in switch[1]:
+                self.ports_tx_stat[switch[0]][port] = 0
+
         links_list = get_link(self.topology_api_app, None)
         for link in links_list:
-            self.topology.add_edge(link.src.dpid, link.dst.dpid, weight = 1, out_port = link.src.port_no)
+            self.topology.add_edge(link.src.dpid, link.dst.dpid, delay = 1, out_port = link.src.port_no, throughput = 0)
         
         # Print DiGraph for debbuging purposes
         # print("DiGraph as text:")
@@ -113,14 +193,14 @@ class SimpleSwitch(app_manager.RyuApp):
             return
         
         self.logger.info(f"Packet-in from switch {datapath.id}, port {in_port}, eth_type={eth.ethertype}")
-        print(f"{eth = }")
+        # print(f"{eth = }")
         print(f"{pkt = }")
 
 
         if arp_pkt:
             self.topology.add_node(arp_pkt.src_ip, mac = arp_pkt.src_mac)
-            self.topology.add_edge(arp_pkt.src_ip, datapath.id, weight = 1, out_port = in_port)
-            self.topology.add_edge(datapath.id, arp_pkt.src_ip, weight = 1, out_port = in_port)
+            self.topology.add_edge(arp_pkt.src_ip, datapath.id, delay = 1, out_port = in_port, throughput = 0)
+            self.topology.add_edge(datapath.id, arp_pkt.src_ip, delay = 1, out_port = in_port, throughput = 0)
 
             # Print DiGraph for debbuging purposes
             # print("DiGraph as text:")
@@ -158,10 +238,10 @@ class SimpleSwitch(app_manager.RyuApp):
             src_ip = ipv4_pkt.src
             dst_ip = ipv4_pkt.dst
 
-            dijkstra_path = nx.dijkstra_path(self.topology, source = src_ip, target = dst_ip, weight = 'weight')
+            dijkstra_path = nx.dijkstra_path(self.topology, source = src_ip, target = dst_ip, weight = 'delay')
             intermediate_switches_on_djkstr_pth = dijkstra_path[1:-1]
-            print(f"{dijkstra_path = }")
-            print(f"{intermediate_switches_on_djkstr_pth = }")
+            # print(f"{dijkstra_path = }")
+            # print(f"{intermediate_switches_on_djkstr_pth = }")
 
             # Add flow on every switch on the path
             for switch in intermediate_switches_on_djkstr_pth:

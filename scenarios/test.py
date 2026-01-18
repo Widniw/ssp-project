@@ -219,7 +219,7 @@ def main():
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--profiles", default="voip,video,bulk")
 
-    parser.add_argument("--warmup", type=int, default=30)
+    parser.add_argument("--warmup", type=int, default=0)
     parser.add_argument("--out", default="results.json")
     parser.add_argument("--log", default="info", choices=["debug", "info", "warning", "error"])
     args = parser.parse_args()

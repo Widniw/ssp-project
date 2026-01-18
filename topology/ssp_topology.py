@@ -11,6 +11,13 @@ class SSPTopo(Topo):
         switches = {}
         hosts = {}
 
+        link_opts = dict(
+            cls=TCLink,
+            bw=10,               # Bandwidth = 10 Mbps
+            max_queue_size=1000,  
+            use_htb=True    
+        )
+
         for i in range(1,5):
             switches[f'R{i}'] = self.addSwitch(f'R{i}', cls=OVSKernelSwitch)
 
@@ -20,16 +27,16 @@ class SSPTopo(Topo):
         hosts[f'H4'] = self.addHost(f'H4', ip = "10.0.0.4/24")
 
 
-        self.addLink(switches['R1'], switches['R2'], cls=TCLink)
-        self.addLink(switches['R1'], switches['R3'], cls=TCLink)
-        self.addLink(switches['R1'], switches['R4'], cls=TCLink)
-        self.addLink(switches['R2'], switches['R4'], cls=TCLink)
-        self.addLink(switches['R3'], switches['R4'], cls=TCLink)
+        self.addLink(switches['R1'], switches['R2'], **link_opts)
+        self.addLink(switches['R1'], switches['R3'], **link_opts)
+        self.addLink(switches['R1'], switches['R4'], **link_opts)
+        self.addLink(switches['R2'], switches['R4'], **link_opts)
+        self.addLink(switches['R3'], switches['R4'], **link_opts)
 
 
-        self.addLink(hosts['H1'], switches['R1'], cls=TCLink)
-        self.addLink(hosts['H3'], switches['R1'], cls=TCLink)
-        self.addLink(hosts['H2'], switches['R4'], cls=TCLink)
-        self.addLink(hosts['H4'], switches['R4'], cls=TCLink)
+        self.addLink(hosts['H1'], switches['R1'], **link_opts)
+        self.addLink(hosts['H3'], switches['R1'], **link_opts)
+        self.addLink(hosts['H2'], switches['R4'], **link_opts)
+        self.addLink(hosts['H4'], switches['R4'], **link_opts)
 
 topos = { 'SSPTopo': (lambda: SSPTopo() ) }
