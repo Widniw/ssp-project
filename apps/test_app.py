@@ -137,7 +137,7 @@ class SimpleSwitch(app_manager.RyuApp):
         self.add_flow(datapath, 0, match, actions)
         self.logger.info(f"Switch {datapath.id}: Zainstalowano Table-Miss Flow (domyślne wysyłanie do kontrolera)")
 
-    def add_flow(self, datapath, priority, match, actions, buffer_id=None):
+    def add_flow(self, datapath, priority, match, actions, buffer_id=None, idle_timeout = 0):
         ofproto = datapath.ofproto
         parser = datapath.ofproto_parser
 
@@ -146,10 +146,12 @@ class SimpleSwitch(app_manager.RyuApp):
         if buffer_id:
             mod = parser.OFPFlowMod(datapath=datapath, buffer_id=buffer_id,
                                     priority=priority, match=match,
-                                    instructions=inst)
+                                    instructions=inst,
+                                    idle_timeout = idle_timeout)
         else:
             mod = parser.OFPFlowMod(datapath=datapath, priority=priority,
-                                    match=match, instructions=inst)
+                                    match=match, instructions=inst,
+                                    idle_timeout = idle_timeout)
         datapath.send_msg(mod)
 
     # Inject packet into the network
@@ -264,7 +266,7 @@ class SimpleSwitch(app_manager.RyuApp):
         
                 actions = [parser.OFPActionOutput(out_port)]
 
-                self.add_flow(datapath_obj, 1, match, actions)
+                self.add_flow(datapath_obj, 1, match, actions, idle_timeout = 5)
             
             #After adding flows, let the first packet go along the path
             next_hop = dijkstra_path[dijkstra_path.index(datapath.id) + 1]
