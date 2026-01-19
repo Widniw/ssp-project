@@ -2,3 +2,5 @@ Przykładowy scenariusz, który pozwoli sprawdzić działanie:
 1. Uruchamiamy stopniowo kilka przepływów pomiędzy parą routerów.
 2. Ruch powinien być rozkładany na niewykorzystywane ścieżki
 3. W odróżnieniu od simple_switch_stp_13, który poprowadzi cały ruch tą sama trasą.
+
+mn --custom topology/ssp_topology.py --topo SSPTopo --controller remote,172.16.0.2,6633
