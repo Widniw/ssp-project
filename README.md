@@ -19,7 +19,7 @@ git clone https://github.com/Widniw/ssp-project/
 3. Build the Ryu image:
 
 ```bash
-docker build --rm -f Dockerfile -t ryu-alpine:latest .
+docker build --rm -f Dockerfile -t ryu-debian:latest .
 ```
 
 4. Start the containers with Docker Compose:
