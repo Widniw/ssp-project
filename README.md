@@ -1,4 +1,15 @@
-# How it Works
+# Optymalizacja Routingu w Sieci SDN
+Projekt implementuje algorytm optymalizacji routingu w sieci SDN (Software-Defined Networking), którego celem jest dynamiczny dobór tras przepływów na podstawie aktualnego stanu sieci
+
+## Cel projektu
+- monitorowanie aktualnych przepustowości łączy w sieci,
+- budowa tablicy stanu sieci na podstawie cyklicznych pomiarów,
+- dynamiczny dobór tras dla nowych przepływów,
+- minimalizacja przeciążeń i opóźnień,
+- centralne sterowanie ruchem przez kontroler SDN.
+
+## Wizualizacja sposobu działania algorytmu
+![Pseudokod algorytmu routingu](images/SSP-pseudocode.drawio(2).png)
 
 Docker Compose runs two containers:
 
