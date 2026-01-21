@@ -32,22 +32,22 @@ Projekt implementuje algorytm optymalizacji routingu w sieci SDN (Software-Defin
 
 ---
 
-# How to Run It
+# Uruchomienie
 
-1. Install Docker.
-2. Clone the repository:
+1. Zainstaluj Docker.
+2. Clone repo:
 
 ```bash
 git clone https://github.com/Widniw/ssp-project/
 ```
 
-3. Build the Ryu image:
+3. Budowanie obrazu Ryu:
 
 ```bash
 docker build --rm -f Dockerfile -t ryu-debian:latest .
 ```
 
-4. Start the containers with Docker Compose:
+4. Uruchomienie kontenerów:
 
 ```bash
 docker compose up
@@ -55,13 +55,20 @@ docker compose up
 
 ---
 
-# How to Stop Running Containers
+# Przykładowy scenariusz działania algorytmu
 
-1. Press `Ctrl + C` in the terminal running Docker Compose.
-2. Remove the containers and network:
+1. Uruchamiamy stopniowo kilka przepływów pomiędzy parą routerów.
+2. Ruch powinien być rozkładany na niewykorzystywane ścieżki
+3. W odróżnieniu od simple_switch_stp_13, który poprowadzi cały ruch tą sama trasą.
+
+## Uruchomienie
 
 ```bash
-docker compose down
+docker exec -it mininet bash
 ```
 
-test
+Po wejściu do kontenera:
+
+```bash
+mn --custom topology/ssp_topology.py --topo SSPTopo --controller remote,172.16.0.2,6633
+```
