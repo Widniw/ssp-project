@@ -72,3 +72,8 @@ Po wejściu do kontenera:
 ```bash
 mn --custom topology/ssp_topology.py --topo SSPTopo --controller remote,172.16.0.2,6633
 ```
+
+## Topologia
+
+Na potrzeby scenariusza testów, wykorzystana została topologia siecie Geant
+![Topologia](images/topology_geant_net.png)
