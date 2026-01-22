@@ -30,7 +30,7 @@ services:
     networks:
       sdn_net:
         ipv4_address: 172.16.0.3
-    #entrypoint: ["/bin/bash", "/ssp-project/scenarios/startup.sh"]    
+    entrypoint: ["/bin/bash", "/ssp-project/scenarios/startup.sh"]    
     
 networks:
   sdn_net:

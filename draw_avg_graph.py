@@ -4,17 +4,11 @@ import glob
 import matplotlib.pyplot as plt
 
 def natural_sort_key(s):
-    """
-    Key for natural sorting (e.g., handles pair1, pair2, pair10 correctly)
-    """
     return [int(text) if text.isdigit() else text.lower()
             for text in re.split('([0-9]+)', s)]
 
 def parse_iperf_intervals(filepath):
-    """
-    Parses an iperf file and extracts a list of (time, throughput) tuples.
-    Returns: list of (local_time_end, throughput_mbits)
-    """
+
     # Regex matches lines like:
     # [  3]  0.0- 1.0 sec  1.12 MBytes  9.44 Mbits/sec
     # Group 1: Interval End Time (e.g., "1.0")
@@ -48,7 +42,7 @@ def parse_iperf_intervals(filepath):
     return data_points
 
 def main():
-    target_folder = 'ospf_algorithm'
+    target_folder = 'our_algorithm'
     start_delay_seconds = 2  # The stagger delay per file
     
     if not os.path.exists(target_folder):

@@ -57,11 +57,13 @@ def run_geant_scenario():
     net.start()
 
     # 3. Connectivity Check
-    info('*** Running Pingall\n')
-    net.pingAll()
+    info('*** Running ping for host discovery\n')
+    for host_src in net.hosts:
+            result = host_src.cmd(f'ping -c 1 10.0.0.200')
+            print(f"{host_src} completed")
 
 
-    wait_for_enter()
+    # wait_for_enter()
 
     # 4. Wait 5 seconds before starting scenario
     info('*** Waiting 5 seconds...\n')
@@ -100,7 +102,7 @@ def run_geant_scenario():
         info(f'*** Warning: Only could generate {len(unique_pairs)} unique pairs.\n')
 
     # 6. Run Iperf Scenario
-    info(f'*** Starting Iperf scenario with {len(unique_pairs)} pairs\n')
+    info(f'*** Starting Iperf scenario with {len(unique_pairs)} random pairs\n')
     
     # We run iperf for a long duration (-t 300) so they stay active
     # We will kill them manually when the scenario ends.

@@ -198,9 +198,9 @@ class SimpleSwitch(app_manager.RyuApp):
         if eth.ethertype == ETHER_TYPE_LLDP:
             return
         
-        self.logger.info(f"Packet-in from switch {datapath.id}, port {in_port}, eth_type={eth.ethertype}")
+        # self.logger.info(f"Packet-in from switch {datapath.id}, port {in_port}, eth_type={eth.ethertype}")
         # print(f"{eth = }")
-        print(f"{pkt = }")
+        # print(f"{pkt = }")
 
 
         if arp_pkt:
@@ -246,7 +246,7 @@ class SimpleSwitch(app_manager.RyuApp):
 
             dijkstra_path = nx.dijkstra_path(self.topology, source = src_ip, target = dst_ip, weight = 'delay')
             intermediate_switches_on_djkstr_pth = dijkstra_path[1:-1]
-            print(f"{dijkstra_path = }")
+            # print(f"{dijkstra_path = }")
             # print(f"{intermediate_switches_on_djkstr_pth = }")
 
             # Add flow on every switch on the path
