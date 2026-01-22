@@ -77,6 +77,10 @@ class SimpleSwitch(app_manager.RyuApp):
 
                 ro = throughput / self.SERVICE_RATE
 
+                if ro > 1:
+                    print(f"Ro over 1, changing to 0.99")
+                    ro = 0.99
+
                 # Delay calculated using M/M/1/K formula from 03_04_Metryki_qos,page 45
                 delay = (1/self.SERVICE_RATE) * \
                 (1 - (self.QUEUE_CAPACITY + 1)*ro**self.QUEUE_CAPACITY + \
@@ -92,8 +96,8 @@ class SimpleSwitch(app_manager.RyuApp):
                     self.topology[dpid][neighbor]['throughput'] = throughput
                     self.topology[dpid][neighbor]['delay'] = delay
 
-                    print(f"Throughput on port {port_no} switch {dpid}: {throughput}")
-                    print(f"Delay on port {port_no} switch {dpid}: {delay}")           
+                    # print(f"Throughput on port {port_no} switch {dpid}: {throughput}")
+                    # print(f"Delay on port {port_no} switch {dpid}: {delay}")           
            
                     break
     
@@ -242,7 +246,7 @@ class SimpleSwitch(app_manager.RyuApp):
 
             dijkstra_path = nx.dijkstra_path(self.topology, source = src_ip, target = dst_ip, weight = 'delay')
             intermediate_switches_on_djkstr_pth = dijkstra_path[1:-1]
-            # print(f"{dijkstra_path = }")
+            print(f"{dijkstra_path = }")
             # print(f"{intermediate_switches_on_djkstr_pth = }")
 
             # Add flow on every switch on the path
