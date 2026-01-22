@@ -9,8 +9,8 @@ services:
       sdn_net:
         ipv4_address: 172.16.0.2
     ports:
-      - "6633:6633"   # OpenFlow
-      - "8080:8080"   # REST API (if your Ryu app exposes it)
+      - "6633:6633"   
+      - "8080:8080"   
     tty: true
 
   mininet:

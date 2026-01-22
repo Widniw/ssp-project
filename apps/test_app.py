@@ -273,9 +273,3 @@ class SimpleSwitch(app_manager.RyuApp):
             first_hop_out_port = self.topology[datapath.id][next_hop]['out_port']
             self.send_packet_out(datapath, first_hop_out_port, pkt)
             
-
-        #Skoro robimy pingall, to na podstawie arp request wypełnijmy DIGraph o hosty i będzie komplet,
-        #Na biezaco wypisuj caly DiGraph, zeby sprawdzic, czy sa zawarte wszystkie informacje.
-        #Potem będzie trzeba zareagować na każdy inny pakiet niz arp, tzn. wyznaczyc sciezke wg. wag i wgrac na
-        #wszystkie switche po drodze flow entry zeby to doszlo
-        #Cel, routing "ospf" dla identycznych laczy, czyli hop-count
